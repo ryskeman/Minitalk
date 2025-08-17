@@ -6,7 +6,7 @@
 /*   By: fernafer <fernafer@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 14:23:06 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/17 20:50:25 by fernando         ###   ########.fr       */
+/*   Updated: 2025/08/17 23:15:15 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	send_char(int pid, char c)
 		{
 			if (kill (pid, SIGUSR2) == -1)
 			{
-			 	ft_printf("Error! Failed to send signal to %d PID.\n", pid);
+				ft_printf("Error! Failed to send signal to %d PID.\n", pid);
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -52,8 +52,6 @@ int	main(int ac, char **av)
 		ft_printf("Error! Uso: ./client <PID server> <message>\n");
 		exit(EXIT_FAILURE);
 	}
-	//ft_printf("PID server: %s\n", av[1]);
-	//ft_printf("Message to send: %s\n", av[2]);
 	pid_server = ft_atoi(av[1]);
 	message = av[2];
 	while (*message)

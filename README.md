@@ -29,6 +29,3 @@ EN OTRA TERMINAL:
 ./client [PID_del_servidor] "Hola mundo, esto es Minitalk!"
 
 ---
-
-### Consejos Adicionales
-
