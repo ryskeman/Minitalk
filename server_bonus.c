@@ -5,119 +5,101 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fernafer <fernafer@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/17 13:59:08 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/19 00:46:11 by fernando         ###   ########.fr       */
+/*   Created: 2025/08/25 23:57:01 by fernafer          #+#    #+#             */
+/*   Updated: 2025/08/26 00:32:11 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include <signal.h>
+#include "libft.h"
 
-/* Use this pointer to storage the message*/
 static char	*g_cli_str = NULL;
 
-/* Function for managing memory in a safety way. */
-char	*ft_realloc_str(char *old_str, int mssge_len)
+void	malloc_exp(char c)
 {
-	char	*new_str;
+	char	*new;
+	char	str[2];
+	char	*old_str;
 
-	if (!old_str)
-	{
-		new_str = (char *)malloc(2);
-		if(!new_str)
-		{
-			ft_printf("Error! Memory assignation failure.\n");
-			exit (EXIT_FAILURE);
-		}
-		new_str[0] = '\0';
-		return (new_str);
-	}
-	new_str = (char *)malloc(mssge_len + 2);
-	if (!new_str)
+	str[0] = c;
+	str[1] = '\0';
+	if (!g_cli_str)
+		g_cli_str = ft_strdup("");
+	if (!g_cli_str)
 	{
 		ft_printf("Error! Memory assignation failure.\n");
-		exit (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
-	ft_memcpy(new_str, old_str, mssge_len);
-	free (old_str);
-	return (new_str);
+	old_str = g_cli_str;
+	new = ft_strjoin(g_cli_str, str);
+	if (!new)
+	{
+		ft_printf("Error! Memory assignation failure.\n");
+		exit(EXIT_FAILURE);
+	}
+	g_cli_str = new;
+	free(old_str);
 }
 
-/* Function for managing memory in a safety way. */
-//char	*ft_realloc_str(char *old_str, int mssge_len)
-//{
-//	char	*new_str;
-//
-//	new_str = (char *)malloc(mssge_len + 2);
-//	if (!new_str)
-//	{
-//		ft_printf("Error! Memory assignation failure.\n");
-//		exit (EXIT_FAILURE);
-//	}
-//	if (old_str)
-//	{
-//		ft_memcpy(new_str, old_str, mssge_len);
-//		free (old_str);
-//	}
-//	return (new_str);
-//}
-
-/* Aux function for clean memory and printing. */
-void	handle_message_end(char current_char, int *mssge_len, int pid_cli)
+void	handle_str_end(pid_t pid_client, char c)
 {
-	if (current_char == '\0')
+	if (c == '\0')
 	{
-		ft_printf("%s\n", g_cli_str);
-		free(g_cli_str);
-		g_cli_str = NULL;
-		*mssge_len = 0;
-		kill(pid_cli, SIGUSR1);
+		if (g_cli_str)
+		{
+			ft_printf("%s\n", g_cli_str);
+			free(g_cli_str);
+			g_cli_str = NULL;
+		}
+		if (kill(pid_client, SIGUSR2) == -1)
+		{
+			ft_printf("Error! Comunication failed. Signal:_SIGUSR2\n");
+			exit(EXIT_FAILURE);
+		}
+		return ;
 	}
-	else
-	{
-		g_cli_str = ft_realloc_str(g_cli_str, *mssge_len);
-		g_cli_str[*mssge_len] = current_char;
-		g_cli_str[*mssge_len + 1] = '\0';
-		(*mssge_len)++;
-	}
+	malloc_exp(c);
 }
 
-/* Decodes the bit. SIGUSR2 is '1' and SIGUSR1 is '0'. */
-void	signal_handler(int signum, siginfo_t *info, void *context)
+void	sig_server_handler(int signal, siginfo_t *info, void *context)
 {
-	static char	current_char;
-	static int	bit_count;
-	static int	mssge_len;
+	static char		c;
+	static int		bit;
+	static pid_t	pid_client;
 
 	(void)context;
-	if (signum == SIGUSR2)
-		current_char |= (1 << bit_count);
-	bit_count++;
-	if (bit_count == 8)
+	if (info->si_pid != 0)
+		pid_client = info->si_pid;
+	if (signal == SIGUSR1)
+		c |= (1 << bit);
+	bit++;
+	if (bit == 8)
 	{
-		handle_message_end(current_char, &mssge_len, info->si_pid);
-		current_char = 0;
-		bit_count = 0;
+		bit = 0;
+		handle_str_end(pid_client, c);
+		c = 0;
 	}
-	// Send confirmation signal to client.
-	if (kill(info->si_pid, SIGUSR1) == -1)
+	if (kill(pid_client, SIGUSR1) == -1)
 	{
-		ft_printf("Error! Failure sending confirmation signal.\n");
+		ft_printf("Error! Comunitacion failed. Signal:_SIGUSR1\n");
 		exit(EXIT_FAILURE);
 	}
 }
 
 int	main(void)
 {
+	pid_t			pid;
 	struct sigaction	sa;
 
-	ft_printf ("Server PID: %d\n", getpid());
-	g_cli_str = NULL;
-	sa.sa_sigaction = signal_handler;	// For use siginfo
+	sa.sa_sigaction = sig_server_handler;
+	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_SIGINFO;		// To access to info->si_pid
+	sigaddset(&sa.sa_mask, SIGUSR1);
+	sigaddset(&sa.sa_mask, SIGUSR2);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
+	pid = getpid();
+	ft_printf("Server PID: %d\n", pid);
 	sleep(1);
 	while (1)
 		pause();

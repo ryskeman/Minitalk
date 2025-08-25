@@ -6,7 +6,7 @@
 /*   By: fernafer <fernafer@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 13:59:08 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/19 00:01:17 by fernando         ###   ########.fr       */
+/*   Updated: 2025/08/26 00:24:07 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	main(void)
 	sa.sa_flags = 0;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
-	//sleep(1);
+	sleep(1);
 	while (1)
 		pause();
 	return (0);
