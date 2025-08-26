@@ -6,7 +6,7 @@
 /*   By: fernafer <fernafer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 14:23:06 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/26 21:15:47 by fernafer         ###   ########.fr       */
+/*   Updated: 2025/08/26 23:27:03 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,32 +31,10 @@ void	send_char(int pid, char c)
 			ft_printf("Error! Failed to send signal to %d PID\n", pid);
 			exit(EXIT_FAILURE);
 		}
-		usleep(100);
+		usleep(1000);
 		bit++;
 	}
 }
-
-// int	main(int ac, char **av)
-// {
-// 	int		pid_server;
-// 	char	*message;
-
-// 	if (ac != 3)
-// 	{
-// 		ft_printf("Error! Uso: ./client <PID server> <message>\n");
-// 		exit(EXIT_FAILURE);
-// 	}
-// 	pid_server = ft_atoi(av[1]);
-// 	message = av[2];
-// 	while (*message)
-// 	{
-// 		send_char(pid_server, *message);
-// 		message++;
-// 	}
-// 	send_char (pid_server, '\0');
-// 	ft_printf("Message sent succesfully!!\n");
-// 	return (EXIT_SUCCESS);
-// }
 
 int	main(int ac, char **av)
 {
@@ -66,7 +44,6 @@ int	main(int ac, char **av)
 
 	if (ac == 3)
 	{
-		sa.sa_handler = sig_cli_handler;
 		sigemptyset(&sa.sa_mask);
 		sa.sa_flags = 0;
 		sigaction(SIGUSR1, &sa, NULL);

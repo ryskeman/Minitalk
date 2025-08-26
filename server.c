@@ -6,7 +6,7 @@
 /*   By: fernafer <fernafer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/17 13:59:08 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/26 21:15:08 by fernafer         ###   ########.fr       */
+/*   Updated: 2025/08/26 23:22:45 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,7 @@ void	handle_str_end(char c)
 		g_cli_str = NULL;
 	}
 	else
-	malloc_exp(c);
-	
+		malloc_exp(c);
 }
 
 /* Decodes the bit. SIGUSR2 is '1' and SIGUSR1 is '0'. */
@@ -63,7 +62,7 @@ void	sig_server_handler(int signal)
 	static char	c;
 	static int	bit;
 
-	if (signal == SIGUSR2)
+	if (signal == SIGUSR1)
 		c |= (1 << bit);
 	bit++;
 	if (bit == 8)
