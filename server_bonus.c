@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fernafer <fernafer@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: fernafer <fernafer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 23:57:01 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/26 00:32:11 by fernando         ###   ########.fr       */
+/*   Updated: 2025/08/26 20:15:54 by fernafer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
 #include "libft.h"
+#include <signal.h>
 
+/* Use this pointer to storage the message*/
 static char	*g_cli_str = NULL;
 
+/* Function for managing memory exponencilly in a safety way. */
 void	malloc_exp(char c)
 {
 	char	*new;
@@ -41,6 +43,7 @@ void	malloc_exp(char c)
 	free(old_str);
 }
 
+/* Aux function for clean memory and printing. */
 void	handle_str_end(pid_t pid_client, char c)
 {
 	if (c == '\0')
@@ -61,6 +64,7 @@ void	handle_str_end(pid_t pid_client, char c)
 	malloc_exp(c);
 }
 
+/* Decodes the bit. SIGUSR2 is '1' and SIGUSR1 is '0'. */
 void	sig_server_handler(int signal, siginfo_t *info, void *context)
 {
 	static char		c;
@@ -88,7 +92,7 @@ void	sig_server_handler(int signal, siginfo_t *info, void *context)
 
 int	main(void)
 {
-	pid_t			pid;
+	pid_t				pid;
 	struct sigaction	sa;
 
 	sa.sa_sigaction = sig_server_handler;

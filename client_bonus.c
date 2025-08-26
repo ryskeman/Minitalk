@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fernafer <fernafer@student.42madrid.com>   +#+  +:+       +#+        */
+/*   By: fernafer <fernafer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 23:47:09 by fernafer          #+#    #+#             */
-/*   Updated: 2025/08/26 00:23:16 by fernando         ###   ########.fr       */
+/*   Updated: 2025/08/26 19:31:33 by fernafer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
 #include "libft.h"
+#include <signal.h>
 
+/* Static variable for handling signal confirmation. */
 static volatile int	g_signal_ack = 0;
 
+/* Fuction for send a character bit to bit. */
 void	send_char(int pid, char c)
 {
 	int	bit;
@@ -57,7 +59,7 @@ int	main(int ac, char **av)
 {
 	int					pid;
 	int					i;
-	struct sigaction			sa;
+	struct sigaction	sa;
 
 	if (ac == 3)
 	{
